@@ -1,5 +1,6 @@
 package com.capstone.capstone.user;
 
+import com.capstone.capstone.config.JwtUtil;
 import com.capstone.capstone.mail.MailService;
 import com.capstone.capstone.user.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ public class UserController {
     private final MailService mailService;
 
     private final UserService userService;
+
+    private final JwtUtil jwtUtil;
 
     // 회원 생성
     @PostMapping("/create")
@@ -76,20 +79,31 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody UserLoginRequest request) {
+
         Map<String, Object> result = new HashMap<>();
 
         try {
+
             User user = userService.login(
                     request.getUsername(),
                     request.getPassword()
             );
 
+            String token = jwtUtil.createToken(
+                    user.getId(),
+                    user.getUsername()
+            );
+
             result.put("success", true);
             result.put("message", "로그인 성공");
+
+            result.put("token", token);
+
             result.put("username", user.getUsername());
             result.put("nickname", user.getNickname());
 
         } catch (Exception e) {
+
             result.put("success", false);
             result.put("message", e.getMessage());
         }
@@ -200,6 +214,28 @@ public class UserController {
         }
 
         return result;
+    }
+
+    @GetMapping("/me")
+    public UserResponse getMe(@RequestHeader("Authorization") String authorizationHeader) {
+
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        Long userId = jwtUtil.getUserId(token);
+
+        User user = userService.findById(userId);
+
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setName(user.getName());
+        response.setNickname(user.getNickname());
+        response.setEmail(user.getEmail());
+        response.setGrade(user.getGrade());
+        response.setCreatedAt(user.getCreatedAt());
+        response.setGender(user.getGender());
+
+        return response;
     }
 
 }
