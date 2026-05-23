@@ -1,8 +1,11 @@
 package com.capstone.capstone.dto.request.User;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
-//3개만 수정 할 수 있게 따로 dto 생성
-public record UserUpdateRequest(@NotBlank(message = "이름은 필수입니다.") String name,
-                                @NotBlank(message = "닉네임 필수입니다.")String nickname,
-                                @NotBlank(message = "전화번호는 필수입니다.")String phone) {}
+public record UserUpdateRequest(
+        @NotBlank(message = "이름은 필수입니다.") String name,
+        @NotBlank(message = "닉네임은 필수입니다.") String nickname,
+        @NotBlank(message = "전화번호는 필수입니다.")
+        @Pattern(regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$", message = "전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)") String phone
+) {}

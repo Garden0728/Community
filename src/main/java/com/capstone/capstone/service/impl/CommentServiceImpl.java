@@ -5,7 +5,7 @@ import com.capstone.capstone.dto.request.Comment.CommentUpdateRequest;
 import com.capstone.capstone.dto.response.Comment.CommentResponse;
 import com.capstone.capstone.entity.Comment;
 import com.capstone.capstone.entity.Post;
-import com.capstone.capstone.entity.User;
+import com.capstone.capstone.entity.user.User;
 import com.capstone.capstone.exception.ErrorCode;
 import com.capstone.capstone.exception.Exception;
 import com.capstone.capstone.repository.CommentRepository;
@@ -14,9 +14,10 @@ import com.capstone.capstone.repository.UserRepository;
 import com.capstone.capstone.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -26,6 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public CommentResponse save(CommentCreateRequest request) {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new Exception(ErrorCode.USER_NOT_FOUND));
@@ -46,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
                 .map(CommentResponse::from)
                 .toList();
     }
-
+    @Transactional
     @Override
     public CommentResponse update(Long id, CommentUpdateRequest request) {
         Comment comment = commentRepository.findById(id)
@@ -57,9 +59,9 @@ public class CommentServiceImpl implements CommentService {
             throw new Exception(ErrorCode.UPDATE_FORBIDDEN);
         }
         comment.update(request.content());
-        return CommentResponse.from(commentRepository.save(comment));
+        return CommentResponse.from(comment);
     }
-
+    @Transactional
     @Override
     public void delete(Long id, Long loginUserId) {
         Comment comment = commentRepository.findById(id)

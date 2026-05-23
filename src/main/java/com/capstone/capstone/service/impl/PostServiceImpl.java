@@ -4,19 +4,20 @@ import com.capstone.capstone.dto.request.Post.PostCreateRequest;
 import com.capstone.capstone.dto.request.Post.PostUpdateRequest;
 import com.capstone.capstone.dto.response.Post.PostResponse;
 import com.capstone.capstone.entity.Post;
-import com.capstone.capstone.entity.User;
+import com.capstone.capstone.entity.user.User;
 import com.capstone.capstone.exception.ErrorCode;
 import com.capstone.capstone.exception.Exception;
 import com.capstone.capstone.repository.PostRepository;
 import com.capstone.capstone.repository.UserRepository;
 import com.capstone.capstone.service.PostService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
@@ -35,7 +36,6 @@ public class PostServiceImpl implements PostService {
                 .build();
         return PostResponse.from(postRepository.save(post));
     }
-
     @Override
     public List<PostResponse> findAll() {
         return postRepository.findAllByOrderByCreatedAtDesc()
@@ -43,7 +43,6 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponse::from)
                 .toList();
     }
-
     @Override
     public List<PostResponse> findByUserId(Long userId) {
         return postRepository.findByUserIdOrderByCreatedAtDesc(userId)
@@ -51,13 +50,12 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponse::from)
                 .toList();
     }
-
     @Override
     public PostResponse findById(Long id) {
         return PostResponse.from(postRepository.findById(id)
                 .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND)));
     }
-
+    @Transactional
     @Override
     public PostResponse update(Long id, PostUpdateRequest request) {
         Post post = postRepository.findById(id)
@@ -68,9 +66,9 @@ public class PostServiceImpl implements PostService {
             throw new Exception(ErrorCode.UPDATE_FORBIDDEN);
         }
         post.update(request.title(), request.content());
-        return PostResponse.from(postRepository.save(post));
+        return PostResponse.from(post);
     }
-
+    @Transactional
     @Override
     public void delete(Long id, Long loginUserId) {
         Post post = postRepository.findById(id)

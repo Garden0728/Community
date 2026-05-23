@@ -1,6 +1,7 @@
 package com.capstone.capstone.dto.response.User;
 
-import com.capstone.capstone.entity.User;
+import com.capstone.capstone.entity.user.Gender;
+import com.capstone.capstone.entity.user.User;
 
 import java.time.format.DateTimeFormatter;
 
@@ -10,7 +11,7 @@ public record UserResponse(
         String name,
         String nickname,
         String phone,
-        int gender,
+        Gender gender,
         String createdAt
 ) {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");

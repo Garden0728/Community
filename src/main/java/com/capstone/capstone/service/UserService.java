@@ -1,12 +1,14 @@
 package com.capstone.capstone.service;
 
+import com.capstone.capstone.dto.request.User.UserSignupRequest;
 import com.capstone.capstone.dto.request.User.UserUpdateRequest;
-import com.capstone.capstone.entity.User;
+import com.capstone.capstone.dto.response.User.UserResponse;
+import com.capstone.capstone.entity.user.User;
 
 import java.util.List;
 
 public interface UserService {
-    User save(User user);
+    UserResponse save(UserSignupRequest request);
     List<User> findAll();
     boolean isLoginIdDuplicate(String loginId);
     boolean isNicknameDuplicate(String nickname);

@@ -1,9 +1,12 @@
-package com.capstone.capstone.entity;
+package com.capstone.capstone.entity.user;
 
+import com.capstone.capstone.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -32,8 +35,12 @@ public class User {
     @Column(nullable = false, unique = true, length = 20)
     private String phone;
 
-    @Column(nullable = false)
-    private int gender; // 1: 남, 2: 여
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Gender gender;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Post> post = new ArrayList<>() ;
 
     private LocalDateTime createdAt;
 

@@ -5,9 +5,7 @@ import com.capstone.capstone.dto.request.User.UserLoginRequest;
 import com.capstone.capstone.dto.request.User.UserSignupRequest;
 import com.capstone.capstone.dto.request.User.UserUpdateRequest;
 import com.capstone.capstone.dto.response.User.UserResponse;
-import com.capstone.capstone.entity.User;
-import com.capstone.capstone.exception.ErrorCode;
-import com.capstone.capstone.exception.Exception;
+import com.capstone.capstone.entity.user.User;
 import com.capstone.capstone.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +23,7 @@ public class UserController {
 
     @PostMapping("/create")
     public UserResponse createUser(@RequestBody @Valid UserSignupRequest request) {
-        if (!request.password().equals(request.passwordConfirm())) {
-            throw new Exception(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
-        }
-        User user = User.builder()
-                .loginId(request.loginId())
-                .name(request.name())
-                .nickname(request.nickname())
-                .password(request.password())
-                .phone(request.phone())
-                .gender(request.gender())
-                .build();
-        return UserResponse.from(userService.save(user));
+        return userService.save(request);
     }
 
     @GetMapping("/list")
@@ -71,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request) {
         return UserResponse.from(userService.update(id, request));
     }
 

@@ -1,43 +1,49 @@
 package com.capstone.capstone.service.impl;
 
+import com.capstone.capstone.dto.request.User.UserSignupRequest;
 import com.capstone.capstone.dto.request.User.UserUpdateRequest;
-import com.capstone.capstone.entity.User;
+import com.capstone.capstone.dto.response.User.UserResponse;
+import com.capstone.capstone.entity.user.User;
 import com.capstone.capstone.exception.ErrorCode;
 import com.capstone.capstone.exception.Exception;
 import com.capstone.capstone.repository.UserRepository;
 import com.capstone.capstone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
+    @Transactional
     @Override
-    public User save(User user) {
-        if (user.getLoginId() == null || user.getPassword() == null) {
-            throw new Exception(ErrorCode.USER_REQUIRED_FIELD);
+    public UserResponse save(UserSignupRequest request) {
+        if (!request.password().equals(request.passwordConfirm())) {
+            throw new Exception(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
-        if (userRepository.existsByLoginId(user.getLoginId())) {
+        if (userRepository.existsByLoginId(request.loginId())) {
             throw new Exception(ErrorCode.LOGIN_ID_DUPLICATE);
         }
-        if (userRepository.existsByNickname(user.getNickname())) {
+        if (userRepository.existsByNickname(request.nickname())) {
             throw new Exception(ErrorCode.NICKNAME_DUPLICATE);
         }
-        if (!user.getPhone().matches("^01[016789]-?\\d{3,4}-?\\d{4}$")) {
-            throw new Exception(ErrorCode.PHONE_FORMAT_INVALID);
-        }
-        if (userRepository.existsByPhone(user.getPhone())) {
+        if (userRepository.existsByPhone(request.phone())) {
             throw new Exception(ErrorCode.PHONE_DUPLICATE);
         }
-        if (user.getGender() != 1 && user.getGender() != 2) {
-            throw new Exception(ErrorCode.GENDER_INVALID);
-        }
-        return userRepository.save(user);
+        User user = User.builder()
+                .loginId(request.loginId())
+                .name(request.name())
+                .nickname(request.nickname())
+                .password(request.password())
+                .phone(request.phone())
+                .gender(request.gender())
+                .build();
+        return UserResponse.from(userRepository.save(user));
     }
 
     @Override
@@ -76,7 +82,7 @@ public class UserServiceImpl implements UserService {
     public User findById(Long id) {
         return findUser(id);
     }
-
+    @Transactional
     @Override
     public User update(Long id, UserUpdateRequest request) {
         User user = findUser(id);
@@ -85,18 +91,13 @@ public class UserServiceImpl implements UserService {
                 && userRepository.existsByNickname(request.nickname())) {
             throw new Exception(ErrorCode.NICKNAME_DUPLICATE);
         }
-        if (request.phone() != null && !user.getPhone().equals(request.phone())) {
-            if (!request.phone().matches("^01[016789]-?\\d{3,4}-?\\d{4}$")) {
-                throw new Exception(ErrorCode.PHONE_FORMAT_INVALID);
-            }
-            if (userRepository.existsByPhone(request.phone())) {
-                throw new Exception(ErrorCode.PHONE_DUPLICATE);
-            }
+        if (!user.getPhone().equals(request.phone()) && userRepository.existsByPhone(request.phone())) {
+            throw new Exception(ErrorCode.PHONE_DUPLICATE);
         }
         user.updateProfile(request.name(), request.nickname(), request.phone());
         return userRepository.save(user);
     }
-
+    @Transactional
     @Override
     public void delete(Long id) {
         userRepository.delete(findUser(id));

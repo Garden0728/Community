@@ -1,5 +1,6 @@
 package com.capstone.capstone.entity;
 
+import com.capstone.capstone.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +28,7 @@ public class Post {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true) //orphanRemoval = true 부모와 연결이 끊긴 자식을 DB에서 자동으로 삭제
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true) //orphanRemoval = true 부모와 연결이 끊긴 자식을 DB에서 자동으로 삭제 외래키 주인이 아님을 명시
     private List<Comment> comments = new ArrayList<>();
 
     private LocalDateTime createdAt;

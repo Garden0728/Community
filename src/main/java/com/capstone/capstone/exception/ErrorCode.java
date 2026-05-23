@@ -9,12 +9,9 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원이 없습니다."),
-    USER_REQUIRED_FIELD(HttpStatus.BAD_REQUEST, "필수 값이 누락되었습니다."),
     LOGIN_ID_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
     NICKNAME_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
     PHONE_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 등록된 전화번호입니다."),
-    PHONE_FORMAT_INVALID(HttpStatus.BAD_REQUEST, "전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678)"),
-    GENDER_INVALID(HttpStatus.BAD_REQUEST, "성별은 1(남자) 또는 2(여자)만 가능합니다."),
     LOGIN_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "아이디가 존재하지 않습니다."),
     PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),

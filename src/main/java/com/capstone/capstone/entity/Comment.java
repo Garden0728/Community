@@ -1,5 +1,6 @@
 package com.capstone.capstone.entity;
 
+import com.capstone.capstone.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
