@@ -1,27 +1,29 @@
-package com.capstone.capstone.dto.response;
+package com.capstone.capstone.dto.response.User;
 
 import com.capstone.capstone.entity.User;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public record UserResponse(
         Long id,
-        String username,
+        String loginId,
         String name,
         String nickname,
         String phone,
         int gender,
-        LocalDateTime createdAt
+        String createdAt
 ) {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public static UserResponse from(User user) {
         return new UserResponse(
                 user.getId(),
-                user.getUsername(),
+                user.getLoginId(),
                 user.getName(),
                 user.getNickname(),
                 user.getPhone(),
                 user.getGender(),
-                user.getCreatedAt()
+                user.getCreatedAt() != null ? user.getCreatedAt().format(FORMATTER) : null
         );
     }
 }

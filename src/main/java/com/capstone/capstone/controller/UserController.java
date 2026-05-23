@@ -1,15 +1,18 @@
 package com.capstone.capstone.controller;
 
-import com.capstone.capstone.dto.request.PasswordChangeRequest;
-import com.capstone.capstone.dto.request.UserLoginRequest;
-import com.capstone.capstone.dto.request.UserSignupRequest;
-import com.capstone.capstone.dto.response.UserResponse;
+import com.capstone.capstone.dto.request.User.PasswordChangeRequest;
+import com.capstone.capstone.dto.request.User.UserLoginRequest;
+import com.capstone.capstone.dto.request.User.UserSignupRequest;
+import com.capstone.capstone.dto.request.User.UserUpdateRequest;
+import com.capstone.capstone.dto.response.User.UserResponse;
 import com.capstone.capstone.entity.User;
+import com.capstone.capstone.exception.ErrorCode;
+import com.capstone.capstone.exception.Exception;
 import com.capstone.capstone.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +24,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public UserResponse createUser(@RequestBody UserSignupRequest request) {
+    public UserResponse createUser(@RequestBody @Valid UserSignupRequest request) {
         if (!request.password().equals(request.passwordConfirm())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new Exception(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
         User user = User.builder()
-                .username(request.username())
+                .loginId(request.loginId())
                 .name(request.name())
                 .nickname(request.nickname())
                 .password(request.password())
@@ -46,9 +49,9 @@ public class UserController {
         return UserResponse.from(userService.findById(id));
     }
 
-    @GetMapping("/check/username")
-    public boolean checkUsername(@RequestParam String username) {
-        return userService.isUsernameDuplicate(username);
+    @GetMapping("/check/loginId")
+    public boolean checkLoginId(@RequestParam String loginId) {
+        return userService.isLoginIdDuplicate(loginId);
     }
 
     @GetMapping("/check/nickname")
@@ -63,22 +66,12 @@ public class UserController {
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody UserLoginRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            User user = userService.login(request.username(), request.password());
-            result.put("success", true);
-            result.put("userId", user.getId());
-            result.put("username", user.getUsername());
-            result.put("nickname", user.getNickname());
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return result;
+        User user = userService.login(request.loginId(), request.password());
+        return Map.of("userId", user.getId(), "loginId", user.getLoginId(), "nickname", user.getNickname());
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserSignupRequest request) {
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest request) {
         return UserResponse.from(userService.update(id, request));
     }
 
@@ -88,58 +81,23 @@ public class UserController {
         return "회원 삭제 완료";
     }
 
-    @PostMapping("/find-username")
-    public Map<String, Object> findUsername(@RequestBody Map<String, String> request) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            result.put("success", true);
-            result.put("username", userService.findUsername(request.get("name"), request.get("phone")));
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return result;
+    @PostMapping("/find-loginId")
+    public Map<String, Object> findLoginId(@RequestBody Map<String, String> request) {
+        return Map.of("loginId", userService.findLoginId(request.get("name"), request.get("phone")));
     }
 
     @PostMapping("/verify-for-password")
     public Map<String, Object> verifyForPassword(@RequestBody Map<String, String> request) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            Long userId = userService.verifyByUsernameAndPhone(request.get("username"), request.get("phone"));
-            result.put("success", true);
-            result.put("userId", userId);
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return result;
+        return Map.of("userId", userService.verifyByLoginIdAndPhone(request.get("loginId"), request.get("phone")));
     }
 
     @PutMapping("/{id}/password")
-    public Map<String, Object> changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            userService.changePassword(id, request.currentPassword(), request.newPassword(), request.newPasswordConfirm());
-            result.put("success", true);
-            result.put("message", "비밀번호가 변경되었습니다.");
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return result;
+    public void changePassword(@PathVariable Long id, @RequestBody PasswordChangeRequest request) {
+        userService.changePassword(id, request.currentPassword(), request.newPassword(), request.newPasswordConfirm());
     }
 
     @PutMapping("/{id}/reset-password")
-    public Map<String, Object> resetPassword(@PathVariable Long id, @RequestBody Map<String, String> request) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            userService.resetPassword(id, request.get("newPassword"), request.get("newPasswordConfirm"));
-            result.put("success", true);
-            result.put("message", "비밀번호가 변경되었습니다.");
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", e.getMessage());
-        }
-        return result;
+    public void resetPassword(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        userService.resetPassword(id, request.get("newPassword"), request.get("newPasswordConfirm"));
     }
 }

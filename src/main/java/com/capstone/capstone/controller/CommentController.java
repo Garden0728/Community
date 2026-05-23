@@ -1,9 +1,10 @@
 package com.capstone.capstone.controller;
 
-import com.capstone.capstone.dto.request.CommentCreateRequest;
-import com.capstone.capstone.dto.request.CommentUpdateRequest;
-import com.capstone.capstone.dto.response.CommentResponse;
+import com.capstone.capstone.dto.request.Comment.CommentCreateRequest;
+import com.capstone.capstone.dto.request.Comment.CommentUpdateRequest;
+import com.capstone.capstone.dto.response.Comment.CommentResponse;
 import com.capstone.capstone.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,12 +13,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comments")
-public class CommentController {
+public class CommentController { //댓글 컨트롤러
 
-    private final CommentService commentService;
+    private final CommentService commentService; //commentService DI
 
-    @PostMapping("/create")
-    public CommentResponse createComment(@RequestBody CommentCreateRequest request) {
+    @PostMapping("/create") //
+    public CommentResponse createComment(@RequestBody @Valid CommentCreateRequest request) {
         return commentService.save(request);
     }
 
@@ -27,7 +28,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}")
-    public CommentResponse updateComment(@PathVariable Long id, @RequestBody CommentUpdateRequest request) {
+    public CommentResponse updateComment(@PathVariable Long id, @RequestBody @Valid CommentUpdateRequest request) {
         return commentService.update(id, request);
     }
 

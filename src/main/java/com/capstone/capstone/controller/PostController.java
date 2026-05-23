@@ -1,9 +1,10 @@
 package com.capstone.capstone.controller;
 
-import com.capstone.capstone.dto.request.PostCreateRequest;
-import com.capstone.capstone.dto.request.PostUpdateRequest;
-import com.capstone.capstone.dto.response.PostResponse;
+import com.capstone.capstone.dto.request.Post.PostCreateRequest;
+import com.capstone.capstone.dto.request.Post.PostUpdateRequest;
+import com.capstone.capstone.dto.response.Post.PostResponse;
 import com.capstone.capstone.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    public PostResponse createPost(@RequestBody PostCreateRequest request) {
+    public PostResponse createPost(@RequestBody @Valid PostCreateRequest request) {
         return postService.save(request);
     }
 
@@ -32,7 +33,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public PostResponse updatePost(@PathVariable Long id, @RequestBody PostUpdateRequest request) {
+    public PostResponse updatePost(@PathVariable Long id, @RequestBody @Valid PostUpdateRequest request) {
         return postService.update(id, request);
     }
 

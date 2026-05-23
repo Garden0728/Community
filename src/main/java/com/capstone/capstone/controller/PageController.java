@@ -23,12 +23,12 @@ public class PageController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "user/login";
     }
 
     @GetMapping("/signup")
     public String signup() {
-        return "signup";
+        return "user/signup";
     }
 
     @GetMapping("/posts/{id}")
@@ -51,16 +51,16 @@ public class PageController {
 
     @GetMapping("/profile")
     public String profile() {
-        return "profile";
+        return "user/profile";
     }
 
     @GetMapping("/profile/password")
     public String password() {
-        return "password";
+        return "user/password";
     }
 
     @GetMapping("/find-password")
     public String findPassword() {
-        return "find-password";
+        return "user/find-password";
     }
 }

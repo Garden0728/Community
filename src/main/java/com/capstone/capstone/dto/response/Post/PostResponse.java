@@ -1,29 +1,31 @@
-package com.capstone.capstone.dto.response;
+package com.capstone.capstone.dto.response.Post;
 
 import com.capstone.capstone.entity.Post;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public record PostResponse(
         Long id,
         String title,
         String content,
         Long userId,
-        String username,
+        String loginId,
         String nickname,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        String createdAt,
+        String updatedAt
 ) {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public static PostResponse from(Post post) {
         return new PostResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getUser() != null ? post.getUser().getId() : null,
-                post.getUser() != null ? post.getUser().getUsername() : null,
+                post.getUser() != null ? post.getUser().getLoginId() : null,
                 post.getUser() != null ? post.getUser().getNickname() : null,
-                post.getCreatedAt(),
-                post.getUpdatedAt()
+                post.getCreatedAt() != null ? post.getCreatedAt().format(FORMATTER) : null,
+                post.getUpdatedAt() != null ? post.getUpdatedAt().format(FORMATTER) : null
         );
     }
 }
