@@ -47,11 +47,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
-
-    @Override
     public boolean isLoginIdDuplicate(String loginId) {
         return userRepository.existsByLoginId(loginId);
     }

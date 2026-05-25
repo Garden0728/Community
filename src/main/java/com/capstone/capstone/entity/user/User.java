@@ -1,5 +1,6 @@
 package com.capstone.capstone.entity.user;
 
+import com.capstone.capstone.entity.post.Comment;
 import com.capstone.capstone.entity.post.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -41,6 +42,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Post> post = new ArrayList<>() ;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comment = new ArrayList<>() ;
 
     private LocalDateTime createdAt;
 

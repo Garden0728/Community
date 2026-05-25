@@ -56,17 +56,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostResponse findById(Long id) {
+        return PostResponse.from(postRepository.findById(id)
+                .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND)));
+    }
+
+    @Override
     public List<PostResponse> findByUserId(Long userId) {
         return postRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(PostResponse::from)
                 .toList();
-    }
-
-    @Override
-    public PostResponse findById(Long id) {
-        return PostResponse.from(postRepository.findById(id)
-                .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND)));
     }
 
     @Override

@@ -5,11 +5,8 @@ import com.capstone.capstone.dto.request.User.UserUpdateRequest;
 import com.capstone.capstone.dto.response.User.UserResponse;
 import com.capstone.capstone.entity.user.User;
 
-import java.util.List;
-
 public interface UserService {
     UserResponse save(UserSignupRequest request);
-    List<User> findAll();
     boolean isLoginIdDuplicate(String loginId);
     boolean isNicknameDuplicate(String nickname);
     boolean isPhoneDuplicate(String phone);

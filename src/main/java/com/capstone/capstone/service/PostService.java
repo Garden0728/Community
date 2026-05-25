@@ -11,8 +11,8 @@ public interface PostService {
     PostResponse save(PostCreateRequest request);
     List<PostResponse> findAll();
     List<PostResponse> findByCategory(Category category);
-    List<PostResponse> findByUserId(Long userId);
     PostResponse findById(Long id);
+    List<PostResponse> findByUserId(Long userId);
     PostResponse update(Long id, PostUpdateRequest request);
     void delete(Long id, Long loginUserId);
 }

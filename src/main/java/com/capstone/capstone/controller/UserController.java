@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,11 +23,6 @@ public class UserController {
     @PostMapping("/create")
     public UserResponse createUser(@RequestBody @Valid UserSignupRequest request) {
         return userService.save(request);
-    }
-
-    @GetMapping("/list")
-    public List<UserResponse> getUserList() {
-        return userService.findAll().stream().map(UserResponse::from).toList();
     }
 
     @GetMapping("/{id}")

@@ -37,14 +37,15 @@ public class PostController {
         return postService.update(id, request);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<PostResponse> getPostsByUser(@PathVariable Long userId) {
+        return postService.findByUserId(userId);
+    }
+
     @DeleteMapping("/{id}")
     public String deletePost(@PathVariable Long id, @RequestParam Long userId) {
         postService.delete(id, userId);
         return "게시글 삭제 완료";
     }
 
-    @GetMapping("/user/{userId}")
-    public List<PostResponse> getPostsByUser(@PathVariable Long userId) {
-        return postService.findByUserId(userId);
-    }
 }

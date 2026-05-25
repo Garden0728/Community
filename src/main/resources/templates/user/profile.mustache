@@ -1,42 +1,53 @@
 {{> _header}}
 {{> _nav}}
-<div class="container" style="max-width:560px">
-  <div class="card shadow-sm mb-4">
-    <div class="card-header fw-bold">내 정보</div>
-    <div class="card-body">
-      <div class="mb-3">
-        <label class="form-label text-muted small">아이디</label>
-        <input type="text" id="loginId" class="form-control" readonly>
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-muted small">이름</label>
-        <input type="text" id="name" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-muted small">닉네임</label>
-        <input type="text" id="nickname" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-muted small">전화번호</label>
-        <input type="text" id="phone" class="form-control">
-      </div>
-      <div class="mb-3">
-        <label class="form-label text-muted small">성별</label>
-        <input type="text" id="gender" class="form-control" readonly>
-      </div>
-      <div class="mb-4">
-        <label class="form-label text-muted small">가입일</label>
-        <input type="text" id="createdAt" class="form-control" readonly>
-      </div>
-      <div id="updateMsg" class="alert d-none"></div>
-      <button class="btn btn-primary w-100" onclick="updateProfile()">정보 수정</button>
-    </div>
-  </div>
+<div class="container" style="max-width:600px">
+  <ul class="nav nav-tabs mb-4" id="profileTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabInfo">내 정보</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabPosts">내 게시글</a></li>
+  </ul>
 
-  <div class="card shadow-sm mb-4">
-    <div class="card-body d-flex justify-content-between">
-      <a href="/profile/password" class="btn btn-outline-secondary btn-sm">비밀번호 변경</a>
-      <button class="btn btn-outline-danger btn-sm" onclick="deleteAccount()">회원 탈퇴</button>
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="tabInfo">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label text-muted small">아이디</label>
+            <input type="text" id="loginId" class="form-control" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small">이름</label>
+            <input type="text" id="name" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small">닉네임</label>
+            <input type="text" id="nickname" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small">전화번호</label>
+            <input type="text" id="phone" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-muted small">성별</label>
+            <input type="text" id="gender" class="form-control" readonly>
+          </div>
+          <div class="mb-4">
+            <label class="form-label text-muted small">가입일</label>
+            <input type="text" id="createdAt" class="form-control" readonly>
+          </div>
+          <div id="updateMsg" class="alert d-none"></div>
+          <button class="btn btn-primary w-100 mb-3" onclick="updateProfile()">정보 수정</button>
+          <div class="d-flex justify-content-between">
+            <a href="/profile/password" class="btn btn-outline-secondary btn-sm">비밀번호 변경</a>
+            <button class="btn btn-outline-danger btn-sm" onclick="deleteAccount()">회원 탈퇴</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="tabPosts">
+      <div class="list-group shadow-sm" id="myPostList">
+        <div class="list-group-item text-muted text-center py-4">불러오는 중...</div>
+      </div>
     </div>
   </div>
 </div>
@@ -51,7 +62,7 @@
     document.getElementById('name').value = data.name;
     document.getElementById('nickname').value = data.nickname;
     document.getElementById('phone').value = data.phone;
-    document.getElementById('gender').value = data.gender === 1 ? '남자' : '여자';
+    document.getElementById('gender').value = data.gender === 'MALE' ? '남자' : '여자';
     document.getElementById('createdAt').value = data.createdAt;
   }
 
@@ -72,7 +83,8 @@
       localStorage.setItem('user', JSON.stringify({ userId: data.id, loginId: data.loginId, nickname: data.nickname }));
       showMsg(msg, 'success', '정보가 수정되었습니다.');
     } else {
-      showMsg(msg, 'danger', '수정에 실패했습니다.');
+      const data = await res.json();
+      showMsg(msg, 'danger', data.message || '수정에 실패했습니다.');
     }
   }
 
@@ -83,10 +95,28 @@
     location.href = '/';
   }
 
-  function showMsg(el, type, text) {
-    el.className = 'alert alert-' + type;
-    el.textContent = text;
+  async function loadMyPosts() {
+    const res = await fetch('/api/posts/user/' + user.userId);
+    const posts = await res.json();
+    const list = document.getElementById('myPostList');
+    if (!posts.length) {
+      list.innerHTML = '<div class="list-group-item text-muted text-center py-4">작성한 게시글이 없습니다.</div>';
+      return;
+    }
+    list.innerHTML = posts.map(p =>
+      `<a href="/posts/${p.id}" class="list-group-item list-group-item-action py-3 px-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="badge bg-secondary me-2">${p.categoryName}</span>
+            <span class="fw-semibold">${p.title}</span>
+          </div>
+          <small class="text-muted text-nowrap ms-3">${p.createdAt}</small>
+        </div>
+      </a>`
+    ).join('');
   }
+
+  document.querySelector('a[href="#tabPosts"]').addEventListener('shown.bs.tab', loadMyPosts);
 
   loadProfile();
 </script>

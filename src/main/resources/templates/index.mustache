@@ -1,9 +1,9 @@
 {{> _header}}
 {{> _nav}}
-<div class="container">
+<div class="container" style="max-width:860px">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="mb-0">게시글 목록</h4>
-    <button class="btn btn-primary btn-sm" onclick="goCreate()">글쓰기</button>
+    <h5 class="mb-0 fw-bold">게시글</h5>
+    <button class="btn btn-primary btn-sm px-3" onclick="goCreate()">글쓰기</button>
   </div>
   <ul class="nav nav-pills mb-3" id="categoryTabs">
     <li class="nav-item"><a class="nav-link" href="/" data-cat="">전체</a></li>
@@ -12,32 +12,37 @@
     <li class="nav-item"><a class="nav-link" href="/?category=CONCERN" data-cat="CONCERN">고민</a></li>
     <li class="nav-item"><a class="nav-link" href="/?category=FREE" data-cat="FREE">자유</a></li>
   </ul>
-  <table class="table table-hover">
-    <thead class="table-light">
-      <tr>
-        <th style="width:60px">번호</th>
-        <th style="width:80px">카테고리</th>
-        <th>제목</th>
-        <th style="width:120px">작성자</th>
-        <th style="width:160px">작성일</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#posts}}
-      <tr style="cursor:pointer" onclick="location.href='/posts/{{id}}'">
-        <td>{{id}}</td>
-        <td><span class="badge bg-secondary">{{categoryName}}</span></td>
-        <td>{{title}}</td>
-        <td>{{nickname}}</td>
-        <td>{{createdAt}}</td>
-      </tr>
-      {{/posts}}
-      {{^posts}}
-      <tr><td colspan="5" class="text-center text-muted py-4">게시글이 없습니다.</td></tr>
-      {{/posts}}
-    </tbody>
-  </table>
+  <div class="list-group shadow-sm">
+    {{#posts}}
+    <a href="/posts/{{id}}" class="list-group-item list-group-item-action py-3 px-4">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-grow-1 overflow-hidden">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge cat-{{category}}">{{categoryName}}</span>
+            <span class="fw-semibold text-truncate">{{title}}</span>
+            <span class="text-muted small">[{{commentCount}}]</span>
+          </div>
+          <p class="mb-0 text-muted small text-truncate">{{content}}</p>
+        </div>
+        <div class="text-end text-muted small text-nowrap flex-shrink-0">
+          <div class="fw-medium">{{nickname}}</div>
+          <div>{{createdAt}}</div>
+        </div>
+      </div>
+    </a>
+    {{/posts}}
+    {{^posts}}
+    <div class="list-group-item text-center text-muted py-5">게시글이 없습니다.</div>
+    {{/posts}}
+  </div>
 </div>
+<style>
+  .cat-EMPLOYMENT { background-color: #0d6efd; }
+  .cat-STUDY      { background-color: #198754; }
+  .cat-CONCERN    { background-color: #fd7e14; }
+  .cat-FREE       { background-color: #6c757d; }
+  .list-group-item-action:hover { background-color: #f8f9fa; }
+</style>
 <script>
   const params = new URLSearchParams(location.search);
   const cat = params.get('category') || '';
