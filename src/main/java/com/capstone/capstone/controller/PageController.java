@@ -1,5 +1,6 @@
 package com.capstone.capstone.controller;
 
+import com.capstone.capstone.entity.post.Category;
 import com.capstone.capstone.service.CommentService;
 import com.capstone.capstone.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,8 +18,17 @@ public class PageController {
     private final CommentService commentService;
 
     @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("posts", postService.findAll());
+    public String index(@RequestParam(required = false) String category, Model model) {
+        if (category != null && !category.isEmpty()) {
+            try {
+                model.addAttribute("posts", postService.findByCategory(Category.valueOf(category)));
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("posts", postService.findAll());
+            }
+        } else {
+            model.addAttribute("posts", postService.findAll());
+        }
+        model.addAttribute("selectedCategory", category != null ? category : "");
         return "index";
     }
 

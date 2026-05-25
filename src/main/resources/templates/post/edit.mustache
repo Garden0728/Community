@@ -5,6 +5,15 @@
     <div class="card-body p-4">
       <h5 class="card-title mb-4">게시글 수정</h5>
       <div class="mb-3">
+        <label class="form-label">카테고리</label>
+        <select id="category" class="form-select">
+          <option value="EMPLOYMENT">취업</option>
+          <option value="STUDY">공부</option>
+          <option value="CONCERN">고민</option>
+          <option value="FREE">자유</option>
+        </select>
+      </div>
+      <div class="mb-3">
         <label class="form-label">제목</label>
         <input type="text" id="title" class="form-control" value="{{post.title}}">
       </div>
@@ -22,6 +31,7 @@
 <script>
   const user = JSON.parse(localStorage.getItem('user') || 'null');
   if (!user) { alert('로그인이 필요합니다.'); location.href = '/login'; }
+  document.getElementById('category').value = '{{post.category}}';
 
   async function submit() {
     const title = document.getElementById('title').value.trim();
@@ -30,7 +40,7 @@
     const res = await fetch('/api/posts/{{post.id}}', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, title, content })
+      body: JSON.stringify({ userId: user.userId, category: document.getElementById('category').value, title, content })
     });
     if (res.ok) {
       location.href = '/posts/{{post.id}}';

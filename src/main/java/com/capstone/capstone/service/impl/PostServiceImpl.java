@@ -3,7 +3,8 @@ package com.capstone.capstone.service.impl;
 import com.capstone.capstone.dto.request.Post.PostCreateRequest;
 import com.capstone.capstone.dto.request.Post.PostUpdateRequest;
 import com.capstone.capstone.dto.response.Post.PostResponse;
-import com.capstone.capstone.entity.Post;
+import com.capstone.capstone.entity.post.Category;
+import com.capstone.capstone.entity.post.Post;
 import com.capstone.capstone.entity.user.User;
 import com.capstone.capstone.exception.ErrorCode;
 import com.capstone.capstone.exception.Exception;
@@ -30,12 +31,14 @@ public class PostServiceImpl implements PostService {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new Exception(ErrorCode.USER_NOT_FOUND));
         Post post = Post.builder()
+                .category(request.category())
                 .title(request.title())
                 .content(request.content())
                 .user(user)
                 .build();
         return PostResponse.from(postRepository.save(post));
     }
+
     @Override
     public List<PostResponse> findAll() {
         return postRepository.findAllByOrderByCreatedAtDesc()
@@ -43,6 +46,15 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponse::from)
                 .toList();
     }
+
+    @Override
+    public List<PostResponse> findByCategory(Category category) {
+        return postRepository.findByCategoryOrderByCreatedAtDesc(category)
+                .stream()
+                .map(PostResponse::from)
+                .toList();
+    }
+
     @Override
     public List<PostResponse> findByUserId(Long userId) {
         return postRepository.findByUserIdOrderByCreatedAtDesc(userId)
@@ -50,13 +62,15 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponse::from)
                 .toList();
     }
+
     @Override
     public PostResponse findById(Long id) {
         return PostResponse.from(postRepository.findById(id)
                 .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND)));
     }
-    @Transactional
+
     @Override
+    @Transactional
     public PostResponse update(Long id, PostUpdateRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND));
@@ -65,11 +79,12 @@ public class PostServiceImpl implements PostService {
         if (!post.getUser().getId().equals(loginUser.getId())) {
             throw new Exception(ErrorCode.UPDATE_FORBIDDEN);
         }
-        post.update(request.title(), request.content());
+        post.update(request.category(), request.title(), request.content());
         return PostResponse.from(post);
     }
-    @Transactional
+
     @Override
+    @Transactional
     public void delete(Long id, Long loginUserId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new Exception(ErrorCode.POST_NOT_FOUND));

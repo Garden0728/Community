@@ -1,4 +1,4 @@
-package com.capstone.capstone.entity;
+package com.capstone.capstone.entity.post;
 
 import com.capstone.capstone.entity.user.User;
 import jakarta.persistence.*;
@@ -18,6 +18,10 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Category category;
 
     private String title;
 
@@ -40,7 +44,8 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void update(String title, String content) {
+    public void update(Category category, String title, String content) {
+        this.category = category;
         this.title = title;
         this.content = content;
         this.updatedAt = LocalDateTime.now();

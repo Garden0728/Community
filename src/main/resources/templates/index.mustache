@@ -5,10 +5,18 @@
     <h4 class="mb-0">게시글 목록</h4>
     <button class="btn btn-primary btn-sm" onclick="goCreate()">글쓰기</button>
   </div>
+  <ul class="nav nav-pills mb-3" id="categoryTabs">
+    <li class="nav-item"><a class="nav-link" href="/" data-cat="">전체</a></li>
+    <li class="nav-item"><a class="nav-link" href="/?category=EMPLOYMENT" data-cat="EMPLOYMENT">취업</a></li>
+    <li class="nav-item"><a class="nav-link" href="/?category=STUDY" data-cat="STUDY">공부</a></li>
+    <li class="nav-item"><a class="nav-link" href="/?category=CONCERN" data-cat="CONCERN">고민</a></li>
+    <li class="nav-item"><a class="nav-link" href="/?category=FREE" data-cat="FREE">자유</a></li>
+  </ul>
   <table class="table table-hover">
     <thead class="table-light">
       <tr>
         <th style="width:60px">번호</th>
+        <th style="width:80px">카테고리</th>
         <th>제목</th>
         <th style="width:120px">작성자</th>
         <th style="width:160px">작성일</th>
@@ -18,18 +26,25 @@
       {{#posts}}
       <tr style="cursor:pointer" onclick="location.href='/posts/{{id}}'">
         <td>{{id}}</td>
+        <td><span class="badge bg-secondary">{{categoryName}}</span></td>
         <td>{{title}}</td>
         <td>{{nickname}}</td>
         <td>{{createdAt}}</td>
       </tr>
       {{/posts}}
       {{^posts}}
-      <tr><td colspan="4" class="text-center text-muted py-4">게시글이 없습니다.</td></tr>
+      <tr><td colspan="5" class="text-center text-muted py-4">게시글이 없습니다.</td></tr>
       {{/posts}}
     </tbody>
   </table>
 </div>
 <script>
+  const params = new URLSearchParams(location.search);
+  const cat = params.get('category') || '';
+  document.querySelectorAll('#categoryTabs .nav-link').forEach(a => {
+    if (a.dataset.cat === cat) a.classList.add('active');
+  });
+
   function goCreate() {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (!user) { alert('로그인이 필요합니다.'); location.href = '/login'; return; }

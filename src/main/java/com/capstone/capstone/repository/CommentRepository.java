@@ -1,6 +1,6 @@
 package com.capstone.capstone.repository;
 
-import com.capstone.capstone.entity.Comment;
+import com.capstone.capstone.entity.post.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

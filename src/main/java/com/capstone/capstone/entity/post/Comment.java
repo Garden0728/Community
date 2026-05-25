@@ -1,4 +1,4 @@
-package com.capstone.capstone.entity;
+package com.capstone.capstone.entity.post;
 
 import com.capstone.capstone.entity.user.User;
 import jakarta.persistence.*;

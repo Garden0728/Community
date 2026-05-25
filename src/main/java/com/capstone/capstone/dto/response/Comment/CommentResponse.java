@@ -1,6 +1,6 @@
 package com.capstone.capstone.dto.response.Comment;
 
-import com.capstone.capstone.entity.Comment;
+import com.capstone.capstone.entity.post.Comment;
 
 import java.time.format.DateTimeFormatter;
 
