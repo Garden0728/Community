@@ -7,7 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+@RestControllerAdvice //controller에서 발생하는 에러를 감지 및 지정한 에러 응답을 내려줌
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)

@@ -36,7 +36,6 @@ public class Comment { //댓글
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
     public void update(String content) {
         this.content = content;
         this.updatedAt = LocalDateTime.now();

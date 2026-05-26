@@ -1,5 +1,6 @@
 {{> _header}}
 {{> _nav}}
+<div id="pageData" data-post-id="{{post.id}}" data-post-user-id="{{post.userId}}"></div>
 <div class="container" style="max-width:800px">
   <div class="card shadow-sm mb-4">
     <div class="card-body">
@@ -56,63 +57,5 @@
     <a href="/" class="btn btn-outline-secondary btn-sm">목록으로</a>
   </div>
 </div>
-<script>
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
-  const postUserId = {{post.userId}};
-
-  if (user && user.userId === postUserId) {
-    document.querySelector('.post-actions').style.display = 'flex';
-  }
-  if (!user) document.getElementById('commentForm').style.display = 'none';
-
-  if (user) {
-    document.querySelectorAll('.comment-actions').forEach(el => {
-      if (parseInt(el.dataset.userId) === user.userId) el.style.display = 'flex';
-    });
-  }
-
-  async function deletePost(id) {
-    if (!confirm('삭제하시겠습니까?')) return;
-    await fetch('/api/posts/' + id + '?userId=' + user.userId, { method: 'DELETE' });
-    location.href = '/';
-  }
-
-  async function submitComment(postId) {
-    const content = document.getElementById('commentContent').value.trim();
-    if (!content) { alert('댓글 내용을 입력하세요.'); return; }
-    await fetch('/api/comments/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, userId: user.userId, postId })
-    });
-    location.reload();
-  }
-
-  function showEditForm(id) {
-    document.querySelector('#comment-' + id + ' .comment-view').style.display = 'none';
-    document.getElementById('edit-' + id).style.display = 'block';
-  }
-
-  function hideEditForm(id) {
-    document.querySelector('#comment-' + id + ' .comment-view').style.display = 'block';
-    document.getElementById('edit-' + id).style.display = 'none';
-  }
-
-  async function submitEdit(id) {
-    const content = document.getElementById('edit-content-' + id).value.trim();
-    if (!content) { alert('내용을 입력하세요.'); return; }
-    await fetch('/api/comments/' + id, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: user.userId, content })
-    });
-    location.reload();
-  }
-
-  async function deleteComment(id) {
-    if (!confirm('댓글을 삭제하시겠습니까?')) return;
-    await fetch('/api/comments/' + id + '?userId=' + user.userId, { method: 'DELETE' });
-    location.reload();
-  }
-</script>
+<script src="/js/post/detail.js"></script>
 {{> _footer}}
